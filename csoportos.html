@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>Adatvezérelt elemzés – Kávézópiac</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Vega stack -->
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #f4f1ee;
+      color: #2b2b2b;
+      line-height: 1.6;
+    }
+
+    section {
+      padding: 80px 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    /* --- HERO / INTRO --- */
+    .hero {
+      background: linear-gradient(
+        rgba(0,0,0,0.55),
+        rgba(0,0,0,0.55)
+      ),
+      url("https://images.unsplash.com/photo-1509042239860-f550ce710b93");
+      background-size: cover;
+      background-position: center;
+      color: white;
+      text-align: center;
+    }
+
+    .hero h1 {
+      font-size: 3em;
+      margin-bottom: 20px;
+    }
+
+    .hero h2 {
+      font-weight: 400;
+      opacity: 0.9;
+      margin-bottom: 30px;
+    }
+
+    /* --- HEADINGS --- */
+    h3 {
+      font-size: 2em;
+      margin-bottom: 20px;
+      color: #4a2c2a;
+    }
+
+    /* --- INSIGHT BLOCK --- */
+    .insight {
+      margin-top: 20px;
+      font-style: italic;
+      color: #555;
+      max-width: 700px;
+    }
+
+    /* --- CHART GRID --- */
+   .chart {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 14px 35px rgba(0,0,0,0.15);
+  margin-top: 40px;
+
+  /* ÚJ */
+  min-height: 520px;
+}
+
+
+    footer {
+      background: #2b2b2b;
+      color: #ddd;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+
+    .chart-with-text {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+}
+
+.chart-with-text .chart {
+  flex: 3;
+}
+
+.chart-with-text .insight {
+  flex: 2;
+  margin-top: 0;
+}
+
+
+  </style>
+</head>
+
+<body>
+
+<!-- 1️⃣ LANDING / INTRO -->
+<section class="hero">
+  <div class="container">
+    <h1>Kávézópiac adatvezérelt elemzése</h1>
+    <h2>Adattanácsadói elemzés döntéshozók számára</h2>
+    <p>
+      Hogyan alakul a napi bevétel a kávézókban, és<br>
+      mely működési tényezők befolyásolják leginkább az üzleti teljesítményt?
+    </p>
+  </div>
+</section>
+
+<!-- 2️⃣ ÜZLETI KÉRDÉS -->
+<section>
+  <div class="container">
+    <h3>Üzleti probléma</h3>
+    <p>
+      A kávézók napi működése során számos tényező befolyásolja a bevételt:
+      a vásárlók száma, az átlagos rendelési érték, a marketing költés vagy a nyitvatartási idő.
+    </p>
+    <p>
+      <strong>De melyek ezek közül a legfontosabbak?</strong><br>
+      Hol lehet hatékonyabban beavatkozni a profit növelése érdekében?
+    </p>
+  </div>
+</section>
+
+<!-- 3️⃣ ADATOK -->
+<section style="background:#fff;">
+  <div class="container">
+    <h3>Az adatok rövid bemutatása</h3>
+    <ul>
+      <li>📊 2001 kávézó egyetlen napjának adatai</li>
+      <li>📍 Valószerű üzleti működési mutatók</li>
+      <li>📈 Bevétel, vásárlók száma, marketing, munkaerő</li>
+    </ul>
+    <p>
+      Az adatok egységes módszertan szerint készültek, ezért
+      <strong>alkalmasak összehasonlító és kapcsolatvizsgálati elemzésre</strong>.
+    </p>
+  </div>
+</section>
+
+<!-- 4️⃣ INSIGHT #1 -->
+<section>
+  <div class="container">
+    <h3>#1 – A bevétel eloszlása</h3>
+
+    <div class="chart-with-text">
+      <div id="chart1" class="chart"></div>
+
+      <p class="insight">
+        A kávézók többsége alacsony–közepes bevételi sávban működik,
+        míg egy kisebb csoport kiemelkedő teljesítményt nyújt.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<!-- 5️⃣ INSIGHT #2 -->
+<section style="background:#fff;">
+  <div class="container">
+    <h3>#2 – Vásárlók száma és bevétel</h3>
+
+    <div class="chart-with-text">
+      <div id="chart2" class="chart"></div>
+
+      <p class="insight">
+        Erős pozitív kapcsolat figyelhető meg a vásárlók száma és a bevétel között,
+        azonban az átlagos kosárérték jelentős eltéréseket okoz.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+<section>
+    <div class="container">
+      <h3>#3 – Kosárérték és Üzemméret sűrűsége</h3>
+  
+      <div class="chart-with-text">
+        <div id="chart3" class="chart"></div>
+  
+        <p class="insight">
+          A sötétebb mezők jelzik a leggyakoribb eseteket. 
+          <br><br>
+          A puszta létszámnövelés nem javítja automatikusan az értékesítési hatékonyságot (upsell).
+        </p>
+      </div>
+    </div>
+  </section>
+
+
+
+<section style="background:#fff;">
+  <div class="container">
+    <h3>#4 – Vásárlók száma és bevétel kapcsolata</h3>
+    <div class="chart-with-text">
+  <div id="chart4" class="chart"></div>
+
+  <p class="insight">
+    A magasabb forgalom általában magasabb bevételt jelent,
+    de az azonos vásárlószám mellett is jelentős bevételkülönbségek figyelhetők meg.
+  </p>
+</div>
+</section>
+
+
+<section>
+  <div class="container">
+    <h3>#5 – Marketing költés és megtérülés</h3>
+
+    <div class="chart-with-text">
+      <div id="chart5" class="chart"></div>
+
+      <p class="insight">
+        A marketing költés önmagában nem garantál magasabb bevételt;
+        a hatékonyság kávézónként jelentősen eltér.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+
+<section style="background:#fff;">
+  <div class="container">
+    <h3>#6 – Alkalmazottak száma és hatékonyság</h3>
+
+    <div class="chart-with-text">
+      <div id="chart6" class="chart"></div>
+
+      <p class="insight">
+        Az adatok alapján a 3-6 fős személyzet jelenti az ideális méretet, ahol maximális a bevétel és a hatékonyság. A 7 fő feletti létszámnövelés már nem hoz többletbevételt, csupán feleslegesen növeli a költségeket.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+
+<section>
+  <div class="container">
+    <h3>#7 – Nyitvatartás és Hatékonyság</h3>
+
+    <div class="chart-with-text">
+      <div id="chart7" class="chart"></div>
+
+      <p class="insight">
+        Az adatok rácáfolnak a várakozásokra: nem a leghosszabb nyitvatartás hozza a legtöbb pénzt..</strong>
+        <br>
+        <em><strong>Következtetés</strong>: A 9 órás "fókuszált" nyitvatartás a legjövedelmezőbb, a 16 óránál hosszabb műszak pedig gazdaságtalan.</em>
+      </p>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- 7️⃣ ZÁRÁS -->
+<section style="background:#fff;">
+  <div class="container">
+    <h3>Következő lépések</h3>
+    <p>
+      A menedzsment számára a következő döntések indokoltak:
+    </p>
+    <ul>
+      <li>Mely kávézó-típusokra érdemes fókuszálni?</li>
+      <li>Hol térül meg leginkább a marketing befektetés?</li>
+      <li>Milyen működési modell skálázható?</li>
+    </ul>
+  </div>
+</section>
+
+<footer>
+  S Data Consultants • Adatvezérelt döntéstámogatás
+</footer>
+
+<script>
+const DATA_URL =
+"https://raw.githubusercontent.com/laczandrea/coffee-shop-data/main/coffee_shop_revenue.csv";
+
+/* 1️⃣ Napi bevétel eloszlása – Histogram */
+const chart1 = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "title": "Napi bevétel eloszlása",
+  "data": { "url": DATA_URL },
+  "mark": { "type": "bar", "cursor": "pointer", "tooltip": true },
+  "params": [{
+    "name": "highlight",
+    "select": {"type": "point", "on": "mouseover"}
+  }],
+  "encoding": {
+    "x": {
+      "field": "Daily_Revenue",
+      "bin": { "maxbins": 30 },
+      "type": "quantitative",
+      "title": "Napi bevétel"
+    },
+    "y": {
+      "aggregate": "count",
+      "type": "quantitative",
+      "title": "Kávézók száma"
+    },
+    "color": { "value": "#6f4e37" },
+    "opacity": {
+      "condition": {"param": "highlight", "value": 1},
+      "value": 0.6
+    }
+  }
+};
+
+const chart2 = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "data": { "url": DATA_URL },
+  "vconcat": [
+    {
+      /* --- FELSŐ ÁBRA: ÁRAMLÁSI DIAGRAM --- */
+      "title": "Gyalogosforgalom trendje és piaci sűrűség",
+      "width": 800,
+      "height": 300,
+      "params": [{
+        "name": "brush",
+        "select": {"type": "interval", "encodings": ["x"]}
+      }],
+      "transform": [
+        {
+          "calculate": "datum.Daily_Revenue < 1500 ? 'Alacsony' : datum.Daily_Revenue < 3000 ? 'Közepes' : 'Magas'",
+          "as": "Revenue_Level"
+        },
+        {
+          "aggregate": [
+            {"op": "mean", "field": "Location_Foot_Traffic", "as": "Avg_Foot_Traffic"},
+            {"op": "count", "as": "Shop_Count"}
+          ],
+          "groupby": ["Operating_Hours_Per_Day", "Revenue_Level"]
+        }
+      ],
+      "mark": {"type": "area", "interpolate": "monotone", "stack": "center", "cursor": "crosshair"},
+      "encoding": {
+        "x": {
+          "field": "Operating_Hours_Per_Day",
+          "type": "quantitative",
+          "title": "Nyitvatartási idő (Kijelöléshez húzd az egeret!)"
+        },
+        "y": {
+          "field": "Avg_Foot_Traffic",
+          "type": "quantitative",
+          "axis": null,
+          "title": "Gyalogosforgalom intenzitás"
+        },
+        "color": {
+          "field": "Revenue_Level",
+          "type": "nominal",
+          "scale": {"range": ["#D2B48C", "#8B4513", "#3E2723"]},
+          "title": "Bevételi kategória"
+        },
+        "tooltip": [
+          {"field": "Revenue_Level", "title": "Szint"},
+          {"field": "Shop_Count", "title": "Kávézók száma"}
+        ]
+      }
+    },
+    {
+      /* --- ALSÓ ÁBRA: ANOMÁLIA DETEKTOR --- */
+      "title": "Egyedi kávézók és kiugró értékek (szűrt nézet)",
+      "width": 800,
+      "height": 150,
+      "transform": [
+        {
+          "filter": {"param": "brush"}
+        }
+      ],
+      "mark": {"type": "point", "filled": true, "size": 100, "opacity": 0.4},
+      "encoding": {
+        "x": {
+          "field": "Location_Foot_Traffic",
+          "type": "quantitative",
+          "title": "Gyalogosforgalom mértéke"
+        },
+        "y": {
+          "field": "Daily_Revenue",
+          "type": "quantitative",
+          "title": "Bevétel"
+        },
+        "color": {
+          "field": "Daily_Revenue",
+          "type": "quantitative",
+          "scale": {"scheme": "browns"},
+          "legend": null
+        },
+        "tooltip": [
+          {"field": "Daily_Revenue", "title": "Bevétel"},
+          {"field": "Location_Foot_Traffic", "title": "Gyalogosforgalom"},
+          {"field": "Average_Order_Value", "title": "Átl. kosárérték"}
+        ]
+      }
+    }
+  ],
+  "config": {
+    "view": {"stroke": null},
+    "axis": {"grid": false}
+  }
+};
+
+/* 3️⃣ Kosárérték Hőtérkép (Heatmap) - KONTRASZTOS VERZIÓ */
+const chart3 = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "Kosárérték eloszlása az alkalmazottak száma szerint",
+  "data": { 
+    "url": "https://raw.githubusercontent.com/dorottya111/dorottya111.github.io/refs/heads/main/data.csv", 
+    "format": {"type": "tsv"} 
+  },
+  "transform": [
+    { "calculate": "toNumber(datum.Number_of_Employees)", "as": "Employees_Numeric" } 
+],
+  "mark": { 
+    "type": "rect", 
+    "stroke": "white", // Vékony fehér keret a négyzeteknek, hogy jobban elkülönüljenek
+    "strokeWidth": 0.5
+  },
+  "encoding": {
+    "x": {
+      "field": "Average_Order_Value",
+      "bin": { "maxbins": 40 },
+      "type": "quantitative",
+      "title": "Átlagos rendelési érték ($)"
+    },
+    "y": {
+        "field": "Employees_Numeric",  
+        "type": "ordinal",             
+        "sort": "ascending",           
+        "title": "Alkalmazottak (fő)"
+    },
+    "color": {
+      "aggregate": "count",
+      "type": "quantitative",
+      "title": "Kávézók sűrűsége",
+      // ÚJ SZÍNSKÁLA: Sárgából indul, narancson át sötétbarnába
+      // Ez sokkal jobban kiemeli a sűrű részeket!
+      "scale": { "scheme": "yelloworangebrown" } 
+    },
+    "tooltip": [
+      { "field": "Average_Order_Value", "bin": true, "title": "Kosárérték Sáv" },
+      { "field": "Number_of_Employees", "title": "Alkalmazottak" },
+      { "aggregate": "count", "title": "Kávézók száma" }
+    ]
+  }
+};
+
+
+const chart4 = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "title": "Vásárlók száma vs Napi bevétel (Görgetéssel nagyítható)",
+  "data": { "url": DATA_URL },
+  "params": [{
+    "name": "grid",
+    "select": "interval",
+    "bind": "scales"
+  }],
+  "mark": { "type": "point", "opacity": 0.4, "cursor": "move", "tooltip": true },
+  "encoding": {
+    "x": {
+      "field": "Number_of_Customers_Per_Day",
+      "type": "quantitative",
+      "title": "Vásárlók száma"
+    },
+    "y": {
+      "field": "Daily_Revenue",
+      "type": "quantitative",
+      "title": "Napi bevétel"
+    },
+    "color": {
+      "field": "Average_Order_Value",
+      "type": "quantitative",
+      "scale": { "scheme": "browns" },
+      "title": "Átlagos kosárérték"
+    }
+  }
+};
+
+/* 5️⃣ Marketing költés vs Bevétel – Scatter + Hover Interakció */
+const chart5 = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v6.json",
+  "title": "Marketing költés vs Bevétel",
+  "data": { "url": DATA_URL },
+  "params": [{
+    "name": "hover",
+    "select": {"type": "point", "on": "mouseover", "nearest": true}
+  }],
+  "mark": { "type": "circle", "opacity": 0.4, "stroke": "#4a2c2a" },
+  "encoding": {
+    "x": {
+      "field": "Marketing_Spend_Per_Day",
+      "type": "quantitative",
+      "title": "Marketing költés"
+    },
+    "y": {
+      "field": "Daily_Revenue",
+      "type": "quantitative",
+      "title": "Napi bevétel"
+    },
+    "size": {
+      "field": "Number_of_Customers_Per_Day",
+      "type": "quantitative",
+      "title": "Vásárlók száma"
+    },
+    "color": { "value": "#a47148" },
+    "strokeWidth": {
+      "condition": {"param": "hover", "value": 2},
+      "value": 0
+    },
+    "opacity": {
+      "condition": {"param": "hover", "value": 0.9},
+      "value": 0.4
+    },
+    "tooltip": [
+      {"field": "Marketing_Spend_Per_Day", "title": "Marketing"},
+      {"field": "Daily_Revenue", "title": "Bevétel"},
+      {"field": "Number_of_Customers_Per_Day", "title": "Vásárlók"}
+    ]
+  }
+};
+
+/* 6️⃣ Hatékonysági Mátrix - JAVÍTOTT SORREND */
+const chart6 = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": "Optimális létszám és egyéni hatékonyság",
+  "data": { "url": "https://raw.githubusercontent.com/dorottya111/dorottya111.github.io/refs/heads/main/data.csv", "format": {"type": "tsv"} },
+  "transform": [
+    // 1. LÉPÉS: Kényszerítjük, hogy a létszám SZÁM legyen (ne szöveg)
+    {
+      "calculate": "toNumber(datum.Number_of_Employees)", 
+      "as": "Emp_Numeric" 
+    },
+    // 2. LÉPÉS: Kiszámoljuk a hatékonyságot
+    {
+      "calculate": "datum.Daily_Revenue / datum.Emp_Numeric", // Itt már az új számot használjuk
+      "as": "Revenue_Per_Employee"
+    }
+  ],
+  "mark": { 
+    "type": "bar", 
+    "cornerRadiusEnd": 4, 
+    "cursor": "pointer" 
+  },
+  "encoding": {
+    "x": {
+      "field": "Emp_Numeric", // AZ ÚJ, SZÁMMÁ ALAKÍTOTT MEZŐT HASZNÁLJUK
+      "type": "ordinal",      // Így oszlop marad
+      "title": "Alkalmazottak száma (fő)",
+      "sort": "ascending"     // Mivel ez már szám, helyes lesz a sorrend (2, 3, 4...)
+    },
+    "y": {
+      "aggregate": "median",
+      "field": "Daily_Revenue",
+      "type": "quantitative",
+      "title": "Medián Napi Bevétel ($)"
+    },
+    "color": {
+      "aggregate": "median",
+      "field": "Revenue_Per_Employee",
+      "type": "quantitative",
+      "title": "Hatékonyság ($/fő)",
+      "scale": { "scheme": "goldorange" },
+      "legend": { "orient": "bottom" }
+    },
+    "opacity": {
+      "condition": { "param": "hover", "value": 1 },
+      "value": 0.3
+    },
+    "tooltip": [
+      { "field": "Emp_Numeric", "title": "Létszám" },
+      { "aggregate": "median", "field": "Daily_Revenue", "title": "Teljes Bevétel ($)", "format": ".0f" },
+      { "aggregate": "median", "field": "Revenue_Per_Employee", "title": "Egy főre jutó bevétel ($)", "format": ".0f" }
+    ]
+  },
+  "params": [
+    {
+      "name": "hover",
+      "select": { "type": "point", "on": "mouseover" }
+    }
+  ]
+};
+
+const chart7 = {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "title": {
+    "text": "Nyitvatartás hossza vs. Bevétel",
+    "subtitle": "Hol a leghatékonyabb a nyitvatartás? (Szín = $/óra)",
+    "fontSize": 18,
+    "subtitleFontSize": 12,
+    "anchor": "start",
+    "color": "#333"
+  },
+  "width": "container",
+  "height": 350,
+  "data": { 
+    "url": "https://raw.githubusercontent.com/dorottya111/dorottya111.github.io/refs/heads/main/data.csv", 
+    "format": {"type": "tsv"} 
+  },
+  "transform": [
+    { "calculate": "toNumber(datum.Operating_Hours_Per_Day)", "as": "Hours_Numeric" },
+    { "calculate": "datum.Daily_Revenue / datum.Hours_Numeric", "as": "Revenue_Per_Hour" }
+  ],
+  "layer": [
+    // 1. RÉTEG: Átmenetes Terület (A látvány miatt)
+    {
+      "mark": {
+        "type": "area",
+        "interpolate": "monotone",
+        "line": true,
+        "color": {
+          "x1": 1, "y1": 1, "x2": 1, "y2": 0,
+          "gradient": "linear",
+          "stops": [
+            {"offset": 0, "color": "rgba(111, 78, 55, 0.6)"}, // Kávébarna
+            {"offset": 1, "color": "rgba(111, 78, 55, 0.0)"}  // Átlátszó alul
+          ]
+        }
+      },
+      "encoding": {
+        "x": { 
+          "field": "Hours_Numeric", 
+          "type": "ordinal", 
+          "sort": "ascending",
+          "axis": {"title": "Nyitvatartási idő (óra)", "grid": false, "labelAngle": 0} 
+        },
+        "y": { 
+          "aggregate": "mean", 
+          "field": "Daily_Revenue", 
+          // FONTOS: Nem 0-tól indítjuk, hogy látszódjon a különbség!
+          "scale": {"zero": false, "padding": 20},
+          "axis": {"title": "Átlagos Napi Bevétel ($)", "gridColor": "#eee"} 
+        }
+      }
+    },
+    // 2. RÉTEG: Vastag Vonal
+    {
+      "mark": { "type": "line", "interpolate": "monotone", "color": "#6f4e37", "strokeWidth": 4 },
+      "encoding": {
+        "x": { "field": "Hours_Numeric", "type": "ordinal", "sort": "ascending" },
+        "y": { "aggregate": "mean", "field": "Daily_Revenue" }
+      }
+    },
+    // 3. RÉTEG: Interaktív Pöttyök (Fehér kerettel)
+    {
+      "mark": { 
+        "type": "circle", 
+        "size": 200, 
+        "stroke": "white", 
+        "strokeWidth": 2, 
+        "cursor": "pointer" 
+      },
+      "encoding": {
+        "x": { "field": "Hours_Numeric", "type": "ordinal", "sort": "ascending" },
+        "y": { "aggregate": "mean", "field": "Daily_Revenue" },
+        "color": {
+          "aggregate": "mean",
+          "field": "Revenue_Per_Hour",
+          "type": "quantitative",
+          "title": "Hatékonyság ($/óra)",
+          // Látványosabb színskála (sötétből világosba)
+          "scale": { "scheme": "redyellowgreen" }, 
+          "legend": { "orient": "bottom", "direction": "horizontal", "titleFontSize": 11 }
+        },
+        "size": {
+          "condition": { "param": "hover", "value": 500 }, // Nagyobb kiemelés
+          "value": 200
+        },
+        "tooltip": [
+          { "field": "Hours_Numeric", "title": "Nyitvatartás (óra)" },
+          { "aggregate": "mean", "field": "Daily_Revenue", "title": "Napi Bevétel", "format": "$.0f" },
+          { "aggregate": "mean", "field": "Revenue_Per_Hour", "title": "Hatékonyság", "format": "$.1f" }
+        ]
+      },
+      "params": [
+        { "name": "hover", "select": { "type": "point", "on": "mouseover" } }
+      ]
+    }
+  ]
+};
+
+/* ▶️ Embed options */
+const opts = {
+  actions: false,
+  renderer: "svg",
+  width: 860,
+  height: 400
+};
+
+/* ▶️ Render charts */
+vegaEmbed("#chart1", chart1, opts);
+vegaEmbed("#chart2", chart2, opts);
+vegaEmbed("#chart3", chart3, opts);
+vegaEmbed("#chart4", chart4, opts);
+vegaEmbed("#chart5", chart5, opts);
+vegaEmbed("#chart6", chart6, opts);
+vegaEmbed("#chart7", chart7, opts);
+</script>
+
+
+</body>
+</html>
